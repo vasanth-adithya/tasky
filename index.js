@@ -1,4 +1,5 @@
 const taskContainer = document.querySelector(".task__container");
+let globalTaskData = [];
 
 const addNewCard = () => {
   // get task data
@@ -9,6 +10,11 @@ const addNewCard = () => {
     type: document.getElementById("taskType").value,
     description: document.getElementById("taskDescription").value,
   };
+
+  globalTaskData.push(taskData);
+
+  // update the local storage
+  localStorage.setItem("taskyCA", JSON.stringify({ card: globalTaskData }));
 
   // generate HTML Code
 
@@ -45,6 +51,51 @@ const addNewCard = () => {
   document.getElementById("imageURL").value = "";
   document.getElementById("taskType").value = "";
   document.getElementById("taskDescription").value = "";
+
+  return;
+};
+
+const loadExistingCards = () => {
+  // check local storage
+  const getData = localStorage.getItem("taskyCA");
+
+  // Parse JSON data if exist
+  if (!getData) return;
+
+  const taskCards = JSON.parse(getData);
+
+  globalTaskData = taskCards.card;
+
+  globalTaskData.map((taskData) => {
+    // generate HTML Code
+    const newCard = `<div id=${taskData.id} class="col-md-6 col-lg-4 my-4">
+                <div class="card">
+                    <div class="card-header gap-2 d-flex justify-content-end">
+                        <button class="btn btn-outline-info">
+                            <i class="fal fa-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger">
+                            <i class="fal fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <img src=${taskData.image}
+                             alt="image" class="card-img">
+                        <h5 class="card-title mt-4">${taskData.title}</h5>
+                        <p class="card-text">${taskData.description}
+                        </p>
+                        <span class="badge bg-primary">${taskData.type}</span>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-outline-primary">Open
+                            Task</button>
+                    </div>
+                </div>
+            </div>`;
+
+    //inject it to DOM
+    taskContainer.insertAdjacentHTML("beforeend", newCard);
+  });
 
   return;
 };
