@@ -1,4 +1,5 @@
 const taskContainer = document.querySelector(".task__container");
+const taskModal = document.querySelector(".task-modal-body");
 let globalTaskData = [];
 
 const generateHTML = (taskData) => {
@@ -21,10 +22,20 @@ const generateHTML = (taskData) => {
                         <span class="badge bg-primary">${taskData.type}</span>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-outline-primary" name=${taskData.id}>Open Task</button>
+                        <button type="button" class="btn btn-outline-primary" name=${taskData.id} data-bs-toggle ="modal" data-bs-target="#showTask" onclick="openTask.apply(this , arguments)">Open Task</button>
                     </div>
                 </div>
             </div>`;
+};
+
+const generateModalHTML = (taskData) => {
+  const date = new Date(parseInt(`${taskData.id}`));
+  return `<div id=${taskData.id}>
+  <img src=${taskData.image} alt="Task Image" class="card-img mb-3" />
+  <strong class="text-sm text-muted ">Created on ${date.toDateString()}</strong>
+  <h2 class="card-title mt-3">${taskData.title}</h2>
+  <p class="leadgit ">${taskData.description}</p>
+  </div>`;
 };
 
 const saveToLocalStorage = () => {
@@ -34,6 +45,7 @@ const saveToLocalStorage = () => {
 const insertToDOM = (content) => {
   taskContainer.insertAdjacentHTML("beforeend", content);
 };
+
 const addNewCard = () => {
   // get task data
   const taskData = {
@@ -165,4 +177,15 @@ const saveEdit = (event) => {
   taskDescription.setAttribute("contenteditable", "false");
   taskType.setAttribute("contenteditable", "false");
   submitButton.innerHTML = "Open Task";
+};
+
+const openTask = function (e) {
+  const searchId = e.target.getAttribute("name");
+  console.log(searchId);
+
+  const getTask = globalTaskData.filter(function (taskData) {
+    return taskData.id === searchId;
+  });
+  // console.log(getTask);
+  taskModal.innerHTML = generateModalHTML(getTask[0]);
 };
